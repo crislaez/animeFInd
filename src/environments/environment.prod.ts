@@ -1,3 +1,5 @@
 export const environment = {
-  production: true
+  production: true,
+  baseEndpoint:'https://kitsu.io/api/',
+  perPage: 20
 };

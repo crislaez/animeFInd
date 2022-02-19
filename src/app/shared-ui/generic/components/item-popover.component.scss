@@ -1,0 +1,32 @@
+@import '../../../../theme/variables';
+
+:host{
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  background: none;
+}
+
+
+ion-item{
+  margin-top: 20px;
+}
+
+
+.modal-ion-card{
+  margin-top: 80px;
+  width: 90%;
+  min-height: 80vh;
+  background: $secondary;
+
+  .modal-ion-card-image{
+    border-radius: 20px;
+    min-height: 50px !important;
+  }
+}
+
+.ion-card-content-container{
+  >div, a{
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+}
