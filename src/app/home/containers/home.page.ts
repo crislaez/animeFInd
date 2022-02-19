@@ -10,7 +10,7 @@ import { AnimeManga } from '@findAnime/shared/utils/models/index';
 import { IonContent, IonInfiniteScroll, ModalController, Platform } from '@ionic/angular';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
+import { delay, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
 import SwiperCore, { Navigation, Pagination, SwiperOptions } from 'swiper';
 
 SwiperCore.use([Pagination, Navigation]);
@@ -43,7 +43,7 @@ SwiperCore.use([Pagination, Navigation]);
 
       <ng-container *ngIf="(trendingList$ | async) as trendingList">
         <ng-container *ngIf="(getTrendingStatus() | async) as trendingStatus">
-          <ng-container *ngIf="trendingStatus !== 'pending' else loader">
+          <ng-container *ngIf="trendingStatus !== 'pending' && !transitionPending; else loader">
             <ng-container *ngIf="trendingList?.length > 0">
 
               <div>
@@ -51,7 +51,7 @@ SwiperCore.use([Pagination, Navigation]);
               </div>
 
               <!-- LAST SETS SLIDER  -->
-              <swiper #swiper effect="fade" [config]="getSliderConfig(trendingList)" >
+              <swiper #swiper effect="fade" *ngIf="trendingList?.length > 0" [config]="getSliderConfig(trendingList)" >
                 <ng-template swiperSlide *ngFor="let item of trendingList; trackBy: trackById" >
                   <ion-card class="ion-activatable ripple-parent slide-ion-card" (click)="openSingleCardModal(item)" >
                     <ion-img class="ion-card-image" [src]="getImage(item, true)" loading="lazy" (ionError)="errorImage($event)"></ion-img>
@@ -177,9 +177,9 @@ export class HomePage {
   sliceText = sliceText;
   @ViewChild(IonContent, {static: true}) content: IonContent;
   @ViewChild(IonInfiniteScroll) ionInfiniteScroll: IonInfiniteScroll;
+  transitionPending = false;
   showButton = false;
   search = new FormControl('');
-
   perPage: number = this._coreConfig.getPerPage();
   infiniteScrollTrigger = new EventEmitter<{page?:number, type:string, filter?:Filter}>();
   statusComponent: {page?:number, type:string, filter?:Filter} = {
@@ -188,8 +188,6 @@ export class HomePage {
     filter: {}
   };
 
-  // status$ = this.store.select(fromHome.status).pipe(shareReplay(1));
-  // trendingStatus$ = this.store.select(fromHome.trendingStatus).pipe(shareReplay(1));
 
   list$ = this.infiniteScrollTrigger.pipe(
     startWith(this.statusComponent),
@@ -213,6 +211,7 @@ export class HomePage {
         ? this.store.select(fromAnime.getTrendingAnimeList)
         : this.store.select(fromManga.getTrendingMangaList)
     })
+    // ,tap(d => console.log(d))
   );
 
 
@@ -268,10 +267,12 @@ export class HomePage {
 
   //SEGMENT
   segmentChanged(event): void{
+    this.transitionPending = true;
+    setTimeout(() => this.transitionPending = false ,0);
     this.content.scrollToTop();
     this.search.reset();
     this.statusComponent = { page: 0, type: event?.detail?.value, filter:{} };
-    this.infiniteScrollTrigger.next(this.statusComponent)
+    this.infiniteScrollTrigger.next(this.statusComponent);
   }
 
   getImage(item: AnimeManga, option?:boolean): string{
@@ -301,8 +302,8 @@ export class HomePage {
     return {
       slidesPerView: info?.length > 1 ? 2 : 1,
       spaceBetween: 40,
-      freeMode: true,
-      pagination:{   clickable: true },
+      // freeMode: true,
+      pagination:{ clickable: true },
       lazy: true,
       preloadImages: false
     };

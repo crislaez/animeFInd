@@ -301,7 +301,7 @@ export class CardModalComponent {
 
   filterType(attribute: Attributes): boolean{
     const { showType = null, episodeCount = null} = attribute || {};
-    return ['special', 'ONA']?.includes(showType) && episodeCount > 1 ? true : false
+    return ['TV', 'special', 'ONA']?.includes(showType) && episodeCount > 1 ? true : false
   }
 
   // OPEN FILTER MODAL
