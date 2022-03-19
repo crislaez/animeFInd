@@ -1,6 +1,14 @@
 @import '../../../../theme/variables';
 
 
+ion-header{
+  background: $secondary;
+}
+
+ion-button{
+  --background: none;
+}
+
 .ion-button-close{
   --background: none;
 }
@@ -47,7 +55,6 @@ hr {
   margin: 5px;
 
   ion-img{
-    border-radius: 20px;
     height: 8em !important;
   }
 
@@ -60,3 +67,8 @@ hr {
 
 }
 
+
+ion-img::part(image) {
+  border-radius: 20px !important;
+  // box-shadow: 2px 2px 2px grey;
+}
