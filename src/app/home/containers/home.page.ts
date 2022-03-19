@@ -10,7 +10,7 @@ import { AnimeManga } from '@findAnime/shared/utils/models/index';
 import { IonContent, IonInfiniteScroll, ModalController, Platform } from '@ionic/angular';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { delay, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
+import { shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
 import SwiperCore, { Navigation, Pagination, SwiperOptions } from 'swiper';
 
 SwiperCore.use([Pagination, Navigation]);
@@ -43,7 +43,7 @@ SwiperCore.use([Pagination, Navigation]);
 
       <ng-container *ngIf="(trendingList$ | async) as trendingList">
         <ng-container *ngIf="(getTrendingStatus() | async) as trendingStatus">
-          <ng-container *ngIf="trendingStatus !== 'pending' && !transitionPending; else loader">
+          <ng-container *ngIf="trendingStatus !== 'pending' && !transitionPending; else skeleton">
             <ng-container *ngIf="trendingList?.length > 0">
 
               <div>
@@ -145,6 +145,28 @@ SwiperCore.use([Pagination, Navigation]);
             <span class="text-color-light">{{'COMMON.NORESULT' | translate}}</span>
           </div>
         </div>
+      </ng-template>
+
+      <!-- LOADER  -->
+      <ng-template #skeleton>
+
+        <div>
+          <h2 class="text-color-light">{{'COMMON.TRENDING' | translate}}</h2>
+        </div>
+        <swiper #swiper effect="fade" [config]="getSliderConfig([0,1])">
+          <ng-template swiperSlide *ngFor="let item of [0,2]">
+
+            <ion-card class="ion-activatable ripple-parent slide-ion-card"  >
+              <ion-img >
+                <ion-skeleton-text animated style="width: 20%"></ion-skeleton-text>
+              </ion-img>
+              <ion-card-header class="font-medium text-color-light">
+                <ion-skeleton-text animated ></ion-skeleton-text>
+              </ion-card-header>
+            </ion-card>
+
+          </ng-template>
+        </swiper>
       </ng-template>
 
       <!-- LOADER  -->
