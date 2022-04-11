@@ -5,15 +5,13 @@ import { CoreConfigService } from '@findAnime/core/services/core-config.service'
 import { CardModalComponent } from '@findAnime/shared-ui/generic/components/card-modal.component';
 import { AnimeActions, Filter, fromAnime } from '@findAnime/shared/anime';
 import { fromManga, MangaActions } from '@findAnime/shared/manga';
-import { emptyObject, EntityStatus, errorImage, getObjectKeys, gotToTop, sliceLongText, sliceText, trackById } from '@findAnime/shared/utils/helpers/functions';
+import { emptyObject, EntityStatus, errorImage, getImage, getObjectKeys, getSliderConfig, getTitle, gotToTop, sliceLongText, sliceText, trackById } from '@findAnime/shared/utils/helpers/functions';
 import { AnimeManga } from '@findAnime/shared/utils/models/index';
 import { IonContent, IonInfiniteScroll, ModalController, Platform } from '@ionic/angular';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
-import SwiperCore, { Navigation, Pagination, SwiperOptions } from 'swiper';
 
-SwiperCore.use([Pagination, Navigation]);
 
 
 @Component({
@@ -44,27 +42,17 @@ SwiperCore.use([Pagination, Navigation]);
       <ng-container *ngIf="(trendingList$ | async) as trendingList">
         <ng-container *ngIf="(getTrendingStatus() | async) as trendingStatus">
           <ng-container *ngIf="trendingStatus !== 'pending' && !transitionPending; else skeleton">
-            <ng-container *ngIf="trendingList?.length > 0">
-
-              <div>
-                <h2 class="text-color-light">{{'COMMON.TRENDING' | translate}}</h2>
-              </div>
-
-              <!-- LAST SETS SLIDER  -->
-              <swiper #swiper effect="fade" *ngIf="trendingList?.length > 0" [config]="getSliderConfig(trendingList)" >
-                <ng-template swiperSlide *ngFor="let item of trendingList; trackBy: trackById" >
-                  <ion-card class="ion-activatable ripple-parent slide-ion-card" (click)="openSingleCardModal(item)" >
-                    <ion-img class="ion-card-image" [src]="getImage(item, true)" loading="lazy" (ionError)="errorImage($event)"></ion-img>
-                    <ion-card-header class="font-medium text-color-light">
-                      {{ sliceText(getTitle(item?.attributes?.titles)) }}
-                    </ion-card-header>
-                    <!-- RIPLE EFFECT  -->
-                    <ion-ripple-effect></ion-ripple-effect>
-                  </ion-card>
-                </ng-template>
-              </swiper>
+            <ng-container *ngIf="trendingStatus !== 'error'; else serverError">
+              <ng-container *ngIf="trendingList?.length > 0; else noData">
+                <!-- LAST SETS SLIDER  -->
+                <app-swiper
+                  [title]="'COMMON.TRENDING'"
+                  [items]="trendingList"
+                  [isSkeleton]="false"
+                  (openSingleCardModal)="openSingleCardModal($event)">
+                </app-swiper>
+              </ng-container>
             </ng-container>
-
           </ng-container>
         </ng-container>
       </ng-container>
@@ -73,41 +61,16 @@ SwiperCore.use([Pagination, Navigation]);
         <ng-container *ngIf="(getStatus() | async) as status">
           <ng-container *ngIf="status !== 'pending' || statusComponent?.page !== 0; else loader">
             <ng-container *ngIf="status !== 'error'; else serverError">
-
               <ng-container *ngIf="list?.length > 0; else noData">
-
-                <div class="margin-bottom-10">
-                  <h2 class="text-color-light">{{'COMMON.ALL_LIST' | translate}}</h2>
-                </div>
-
-                <ion-card class="ion-activatable ripple-parent item-card" *ngFor="let item of list; let i = index; trackBy: trackById" (click)="openSingleCardModal(item)">
-                  <div class="displays-around text-color-light heigth-70">
-                    <div class="width-20">
-                      <ion-img [src]="getImage(item)" loading="lazy" (ionError)="errorImage($event)"></ion-img>
-                    </div>
-
-                    <div class="width-60">
-                      {{ sliceLongText(getTitle(item?.attributes?.titles)) }}
-                    </div>
-
-                    <div class="width-10">
-                      <ion-icon name="chevron-forward-outline"></ion-icon>
-                    </div>
-                  </div>
-                  <!-- RIPLE EFFECT  -->
-                  <ion-ripple-effect></ion-ripple-effect>
-                </ion-card>
-
-                <!-- INFINITE SCROLL  -->
-                <ng-container *ngIf="getTotalCount() | async as total">
-                  <ng-container *ngIf="list?.length < total">
-                    <ion-infinite-scroll threshold="100px" (ionInfinite)="loadData($event, total)">
-                      <ion-infinite-scroll-content class="loadingspinner">
-                      </ion-infinite-scroll-content>
-                    </ion-infinite-scroll>
-                  </ng-container>
-                </ng-container>
-
+                <!-- LIST  -->
+                <app-infinite-scroll
+                  [list]="list"
+                  [title]="'COMMON.ALL_LIST'"
+                  [total]="getTotalCount() | async"
+                  [status]="status"
+                  (loadDataTrigger)="loadData($event)"
+                  (openSingleCardModal)="openSingleCardModal($event)">
+                </app-infinite-scroll>
               </ng-container>
             </ng-container>
           </ng-container>
@@ -121,61 +84,26 @@ SwiperCore.use([Pagination, Navigation]);
 
       <!-- IS ERROR -->
       <ng-template #serverError>
-        <div class="error-serve heigth-mid">
-          <div>
-            <span>
-              <!-- <ion-icon class="text-color-light max-size" name="cloud-offline-outline"></ion-icon> -->
-              <img [src]="'assets/images/error.png'"/>
-            </span>
-            <br>
-            <span class="text-color-ligth">{{'COMMON.ERROR' | translate}}</span>
-          </div>
-        </div>
+        <app-no-data [title]="'COMMON.ERROR'" [image]="'assets/images/error.png'" [top]="'10vh'"></app-no-data>
       </ng-template>
 
       <!-- IS NO DATA  -->
       <ng-template #noData>
-        <div class="error-serve heigth-mid">
-          <div>
-            <span>
-              <!-- <ion-icon class="text-color-light max-size" name="clipboard-outline"></ion-icon> -->
-              <img [src]="'assets/images/empty.png'"/>
-            </span>
-            <br>
-            <span class="text-color-light">{{'COMMON.NORESULT' | translate}}</span>
-          </div>
-        </div>
+        <app-no-data [title]="'COMMON.NORESULT'" [image]="'assets/images/empty.png'" [top]="'10vh'"></app-no-data>
       </ng-template>
 
       <!-- LOADER  -->
       <ng-template #skeleton>
-
-        <div>
-          <h2 class="text-color-light">{{'COMMON.TRENDING' | translate}}</h2>
-        </div>
-        <swiper #swiper effect="fade" [config]="getSliderConfig([0,1])">
-          <ng-template swiperSlide *ngFor="let item of [0,2]">
-
-            <ion-card class="ion-activatable ripple-parent slide-ion-card"  >
-              <ion-img >
-                <ion-skeleton-text animated style="width: 20%"></ion-skeleton-text>
-              </ion-img>
-              <ion-card-header class="font-medium text-color-light">
-                <ion-skeleton-text animated ></ion-skeleton-text>
-              </ion-card-header>
-            </ion-card>
-
-          </ng-template>
-        </swiper>
+        <app-swiper
+          [title]="'COMMON.TRENDING'"
+          [isSkeleton]="true">
+        </app-swiper>
       </ng-template>
 
       <!-- LOADER  -->
       <ng-template #loader>
-        <div class="pending-div">
-          <ion-spinner class="loadingspinner"></ion-spinner>
-        </div>
+        <app-spinner [top]="'20%'"></app-spinner>
       </ng-template>
-
     </div>
 
     <!-- TO TOP BUTTON  -->
@@ -197,6 +125,9 @@ export class HomePage {
   errorImage = errorImage;
   sliceLongText = sliceLongText;
   sliceText = sliceText;
+  getSliderConfig = getSliderConfig;
+  getTitle = getTitle;
+  getImage = getImage;
   @ViewChild(IonContent, {static: true}) content: IonContent;
   @ViewChild(IonInfiniteScroll) ionInfiniteScroll: IonInfiniteScroll;
   transitionPending = false;
@@ -297,38 +228,16 @@ export class HomePage {
     this.infiniteScrollTrigger.next(this.statusComponent);
   }
 
-  getImage(item: AnimeManga, option?:boolean): string{
-    const { attributes = null } = item || {};
-    const { posterImage = null } = attributes || {};
-    return !option
-      ? posterImage?.tiny || posterImage?.small || posterImage?.medium || posterImage?.large || posterImage?.original
-      : posterImage?.original || posterImage?.large || posterImage?.medium || posterImage?.small || posterImage?.tiny;
-  }
-
   // INIFINITE SCROLL
-  loadData(event, total) {
-    setTimeout(() => {
-      this.statusComponent = {...this.statusComponent, page: this.statusComponent?.page + this.perPage };
+  loadData({event, total}) {
+    this.statusComponent = {...this.statusComponent, page: this.statusComponent?.page + this.perPage };
 
-      if(this.statusComponent?.page >= total){
-        if(this.ionInfiniteScroll) this.ionInfiniteScroll.disabled = true
-      }
+    if(this.statusComponent?.page >= total){
+      if(this.ionInfiniteScroll) this.ionInfiniteScroll.disabled = true
+    }
 
-      this.infiniteScrollTrigger.next(this.statusComponent);
-      event.target.complete();
-    }, 500);
-  }
-
-  // SLIDES CONFIG
-  getSliderConfig(info:any): SwiperOptions {
-    return {
-      slidesPerView: info?.length > 1 ? 2 : 1,
-      spaceBetween: 40,
-      // freeMode: true,
-      pagination:{ clickable: true },
-      lazy: true,
-      preloadImages: false
-    };
+    this.infiniteScrollTrigger.next(this.statusComponent);
+    event.target.complete();
   }
 
   // SHOW SINGLE CARD
@@ -360,9 +269,6 @@ export class HomePage {
     : this.store.select(fromManga.getTrendingStatus)
   }
 
-  getTitle(titles: any): string{
-    return titles['en'] || titles['en_jp'] || titles['en_us'] || titles['en_cn'] || '';
-  }
 
 
 

@@ -8,6 +8,7 @@ import { SharedModule } from '@findAnime/shared/shared/shared.module';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { SwiperModule } from 'swiper/angular';
+import { InfiniteScrollComponent } from './components/infinite-scroll.component';
 import { HomePage } from './containers/home.page';
 import { HomePageRoutingModule } from './home-routing.module';
 
@@ -25,6 +26,9 @@ import { HomePageRoutingModule } from './home-routing.module';
     TranslateModule.forChild(),
     HomePageRoutingModule
   ],
-  declarations: [HomePage]
+  declarations: [
+    HomePage,
+    InfiniteScrollComponent
+  ]
 })
 export class HomePageModule {}

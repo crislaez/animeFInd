@@ -21,15 +21,7 @@ ion-button{
 
   .modal-ion-card-image{
     border-radius: 20px;
-    min-height: 50px !important;
-  }
-}
-
-
-.ion-card-content-container{
-  >div, a{
-    padding-top: 20px;
-    padding-bottom: 20px;
+    min-height: 475px !important;
   }
 }
 
@@ -50,23 +42,6 @@ hr {
   opacity: 1 !important;
   visibility: visible !important;
 }
-
-.ion-card{
-  margin: 5px;
-
-  ion-img{
-    height: 8em !important;
-  }
-
-  .ion-card-header{
-    min-height: 30px !important;
-    margin-top: -5px;
-    color: $tertiary !important;
-    background: $fourtiary !important;
-  }
-
-}
-
 
 ion-img::part(image) {
   border-radius: 20px !important;

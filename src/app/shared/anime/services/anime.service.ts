@@ -31,9 +31,6 @@ export class AnimeService {
         const { count = null } = meta || {};
         return { animeList: data || [], totalCount: count || 0 };
       }),
-      // map(() => {
-      //   throw 505
-      // }),
       catchError((error) => {
         return throwError(error)
       })

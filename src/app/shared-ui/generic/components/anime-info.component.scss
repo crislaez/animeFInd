@@ -1,0 +1,13 @@
+@import '../../../../theme/variables';
+
+:host{
+  width: 100%;
+}
+
+
+.item-wrapper{
+  >div, a{
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+}

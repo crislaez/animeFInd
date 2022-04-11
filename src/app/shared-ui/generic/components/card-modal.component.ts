@@ -1,13 +1,12 @@
-import { Attribute, ChangeDetectionStrategy, Component, EventEmitter, Input, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, ViewChild } from '@angular/core';
 import { CoreConfigService } from '@findAnime/core/services/core-config.service';
-import { ChapterActions, fromChapter } from '@findAnime/shared/chapter';
 import { EpisodeActions, Filter, fromEpisode } from '@findAnime/shared/episode';
-import { emptyObject, EntityStatus, errorImage, getObjectKeys, gotToTop, sliceText, trackById, smallSliceText } from '@findAnime/shared/utils/helpers/functions';
+import { emptyObject, EntityStatus, errorImage, getObjectKeys, gotToTop, sliceText, smallSliceText, trackById } from '@findAnime/shared/utils/helpers/functions';
 import { AnimeManga, Attributes } from '@findAnime/shared/utils/models';
-import { IonContent, ModalController, IonInfiniteScroll } from '@ionic/angular';
+import { IonContent, IonInfiniteScroll, ModalController } from '@ionic/angular';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { filter, switchMap, tap, map } from 'rxjs/operators';
+import { filter, switchMap, tap } from 'rxjs/operators';
 import { ItemPopoverComponent } from './item-popover.component';
 
 
@@ -24,7 +23,6 @@ import { ItemPopoverComponent } from './item-popover.component';
     </ion-toolbar>
   </ion-header>
 
-
   <!-- MAIN  -->
   <ion-content [fullscreen]="true" [scrollEvents]="true" (ionScroll)="logScrolling($any($event))">
     <div class="container">
@@ -37,85 +35,25 @@ import { ItemPopoverComponent } from './item-popover.component';
             <div class="ion-card-content-container displays-around text-color-ligth">
               <!-- <div class="width-90 big-size-medium text-center span-bold">{{ getTitle(item?.attributes?.titles) }}</div> -->
 
-              <div class="width-90 big-size-medium text-center span-bold">{{ item?.attributes?.showType || item?.attributes?.subtype}}</div>
-
-              <div class="width-40 mediun-size span-bold">{{ 'COMMON.CREATE' | translate }}:</div>
-              <div class="width-40 mediun-size">{{ (item?.attributes?.startDate || item?.attributes?.createdAt) | date: 'MMM d, y' }}</div>
-
-              <ng-container *ngIf="item?.attributes?.endDate && !['movie']?.includes(item?.attributes?.showType) && filterType(item?.attributes) && item?.attributes?.mangaType !== 'manga'">
-                <div class="width-40 mediun-size span-bold">{{ 'COMMON.FINISH_DATE' | translate }}:</div>
-                <div class="width-40 mediun-size">{{ item?.attributes?.endDate | date: 'MMM d, y' }}</div>
-              </ng-container>
-
-              <ng-container *ngIf="!['movie', 'special']?.includes(item?.attributes?.showType)">
-                <div class="width-40 mediun-size span-bold">{{ 'COMMON.STATUS' | translate }}:</div>
-                <div class="width-40 mediun-size">{{ item?.attributes?.status }}</div>
-              </ng-container>
-
-              <ng-container *ngIf="item?.attributes?.averageRating as averageRating">
-                <div class="width-40 mediun-size span-bold">{{ 'COMMON.AVERAGE_RATING' | translate }}:</div>
-                <div class="width-40 mediun-size">{{ averageRating }}</div>
-              </ng-container>
-
-              <ng-container *ngIf="item?.attributes?.ageRatingGuide as ageRatingGuide">
-                <div class="width-40 mediun-size span-bold">{{ 'COMMON.AGE_RATING_GUIDE' | translate }}:</div>
-                <div class="width-40 mediun-size">{{ ageRatingGuide }}</div>
-              </ng-container>
-
-              <!-- ANIME  -->
-              <ng-container *ngIf="item?.attributes?.episodeCount && item?.attributes?.showType === 'TV'">
-                <div class="width-40 mediun-size span-bold">{{ 'COMMON.NUMBER_EPISODES' | translate }}:</div>
-                <div class="width-40 mediun-size">{{ item?.attributes?.episodeCount }}</div>
-              </ng-container>
-               <!-- ****  -->
-
-              <ng-container *ngIf="item?.attributes?.episodeLength">
-                <div class="width-40 mediun-size span-bold">{{ 'COMMON.DURATION' | translate }}:</div>
-                <div class="width-40 mediun-size">{{ item?.attributes?.episodeLength }} {{ 'COMMON.MINUTES' | translate }}</div>
-              </ng-container>
-
-              <!-- MANGA  -->
-              <!-- ****  -->
-
-              <!-- DESCRIPTION  -->
-              <div class="width-90 mediun-size text-center span-bold">{{ 'COMMON.DESCRIPTION' | translate }}</div>
-              <div class="width-90 mediun-size">{{ item?.attributes?.synopsis }}</div>
+              <app-anime-info
+                [item]="item"
+                (filterType)="filterType(item?.attributes)">
+              </app-anime-info>
 
               <ng-container *ngIf="(episodesOrChapters$ | async) as episodesOrChapters">
                 <ng-container *ngIf="(status$ | async) as status">
                   <ng-container *ngIf="status !== 'pending' || statusComponent?.page !== 0; else loader">
                     <ng-container *ngIf="status !== 'error'; else serverError">
                       <ng-container *ngIf="episodesOrChapters?.length > 0; else noData">
-
-                        <ion-card class="ion-activatable ripple-parent ion-card" *ngFor="let item of episodesOrChapters; let i = index; trackBy: trackById" (click)="openItemPopover(item)">
-                          <ion-img [src]="getEpisodeChapterImage(item, true)" loading="lazy" (ionError)="errorImage($event)"></ion-img>
-
-                          <ion-card-header class="ion-card-header font-medium">
-                            <!-- ANIME  -->
-                            <div *ngIf="item?.attributes?.seasonNumber as seasonNumber">{{ 'COMMON.SEASON' | translate }} {{ seasonNumber }}</div>
-                            <div *ngIf="statusComponent?.type === 'TV' && item?.attributes?.number">{{ 'COMMON.EPISODE' | translate }} {{ item?.attributes?.number }}</div>
-                            <!-- ****  -->
-
-                            <!-- MANGA  -->
-                            <!-- <div *ngIf="item?.attributes?.volumeNumber as volumeNumber">{{ 'COMMON.VOLUMEN' | translate }} {{ volumeNumber }}</div> -->
-                            <!-- ****  -->
-
-                            <!-- <div *ngIf="item?.attributes?.titles as title">{{ smallSliceText(getTitle(title)) }}</div> -->
-                            <!-- <div *ngIf="item?.attributes?.airdate as airdate">{{ airdate | date: 'MMM d, y' }}</div> -->
-                          </ion-card-header>
-                          <!-- RIPLE EFFECT  -->
-                          <ion-ripple-effect></ion-ripple-effect>
-                        </ion-card>
-
-                        <!-- INFINITE SCROLL  -->
-                        <ng-container *ngIf="totalCount$| async as total">
-                          <ng-container *ngIf="episodesOrChapters?.length < total">
-                            <ion-infinite-scroll threshold="100px" (ionInfinite)="loadData($event, total)">
-                              <ion-infinite-scroll-content class="loadingspinner">
-                              </ion-infinite-scroll-content>
-                            </ion-infinite-scroll>
-                          </ng-container>
-                        </ng-container>
+                        <!-- EPISODES OR CHAPTERS  -->
+                        <app-infinite-scroll-chapter
+                          [episodesOrChapters]="episodesOrChapters"
+                          [type]="statusComponent?.type"
+                          [status]="status"
+                          [total]="(totalCount$ | async)"
+                          (loadDataTrigger)="loadData($event)"
+                          (openItemPopover)="openItemPopover($event)">
+                        </app-infinite-scroll-chapter>
 
                       </ng-container>
                     </ng-container>
@@ -131,35 +69,16 @@ import { ItemPopoverComponent } from './item-popover.component';
 
       <!-- IS ERROR -->
       <ng-template #serverError>
-        <div class="error-serve heigth-mid">
-          <div>
-            <span>
-              <!-- <ion-icon class="text-color-light max-size" name="cloud-offline-outline"></ion-icon> -->
-              <img [src]="'assets/images/error.png'"/>
-            </span>
-            <br>
-            <span class="text-color-light">{{'COMMON.ERROR' | translate}}</span>
-          </div>
-        </div>
+        <app-no-data [title]="'COMMON.ERROR'" [image]="'assets/images/error.png'" [top]="'10vh'"></app-no-data>
       </ng-template>
 
       <!-- IS NO DATA  -->
       <ng-template #noData>
-        <div class="error-serve heigth-mid">
-          <div>
-            <span>
-              <!-- <ion-icon class="text-color-light max-size" name="clipboard-outline"></ion-icon> -->
-              <img [src]="'assets/images/empty.png'"/>
-            </span>
-            <br>
-            <span class="text-color-light">{{'COMMON.NORESULT_ONLY' | translate}}</span>
-          </div>
-        </div>
+        <app-no-data [title]="'COMMON.NORESULT_ONLY'" [image]="'assets/images/empty.png'" [top]="'10vh'"></app-no-data>
       </ng-template>
 
       <!-- LOADER  -->
       <ng-template #loader>
-        <!-- <ion-spinner class="loadingspinner heigth-small"></ion-spinner> -->
         <ion-progress-bar type="indeterminate"></ion-progress-bar>
       </ng-template>
     </div>
@@ -225,7 +144,6 @@ export class CardModalComponent {
 
 
   ionViewWillEnter(): void{
-    // console.log(this.item)
     const { id = null, attributes:{ showType = null, mangaType = null, episodeCount = null } = null } = this.item || {};
 
     if(id && ['TV','special','ONA']?.includes(showType) && (!episodeCount || episodeCount > 1)){
@@ -267,17 +185,15 @@ export class CardModalComponent {
   }
 
   // INIFINITE SCROLL
-  loadData(event, total) {
-    setTimeout(() => {
-      this.statusComponent = {...this.statusComponent, page: this.statusComponent?.page + this.perPage };
+  loadData({event, total}) {
+    this.statusComponent = {...this.statusComponent, page: this.statusComponent?.page + this.perPage };
 
-      if(this.statusComponent?.page >= total){
-        if(this.ionInfiniteScroll) this.ionInfiniteScroll.disabled = true
-      }
+    if(this.statusComponent?.page >= total){
+      if(this.ionInfiniteScroll) this.ionInfiniteScroll.disabled = true
+    }
 
-      this.infiniteScrollTrigger.next(this.statusComponent);
-      event.target.complete();
-    }, 500);
+    this.infiniteScrollTrigger.next(this.statusComponent);
+    event.target.complete();
   }
 
   getImage(item: AnimeManga, option: boolean): string{
@@ -286,13 +202,6 @@ export class CardModalComponent {
     return option
       ? posterImage?.large || posterImage?.medium || posterImage?.original || posterImage?.tiny
       : coverImage?.large
-  }
-
-  getEpisodeChapterImage(item: AnimeManga, option: boolean): string{
-    const { attributes = null } = item || {};
-    const { thumbnail = null } = attributes || {};
-    const { original = null } = thumbnail || {};
-    return original || ''
   }
 
   getTitle(titles: any): string{

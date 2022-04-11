@@ -261,14 +261,6 @@ $fifthiary: #282c34; //color texto oscuro
 $errorColor: red; //color texto error
 
 
-.loadingspinner{
-  --color: #9246FF;
-}
-
-.loadingspinnerSecond{
-  --color: #9246FF;
-}
-
 ion-fab-button{
   --background: #9246FF;
   border-radius: 50%;
@@ -426,7 +418,7 @@ ion-searchbar{
 
   .searchbar-input-container {
     input{
-      background: #fff !important;
+      background: #E0CBFD !important;
       color: $fifthiary !important;
       font-size: 14px !important;
     }
@@ -600,42 +592,6 @@ ion-avatar{
 // ********** END ION-COMPONENTS
 
 
-// ********** START APP CONFIG
-//ERROR
-.error-serve{
-  width: 100%;
-  height: 70vh;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-
-  img{
-    width: 40%;
-  }
-
-  div{
-    width: 80%;
-    text-align: center;
-  }
-}
-
-.no-data-div{
-  width: 100%;
-  height: 39vh;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-
-  div{
-    width: 80%;
-    text-align: center;
-  }
-}
-
 // START MODAL FILTER *****
 ion-modal{
   --background: none !important;
@@ -683,6 +639,12 @@ ion-modal{
 
 .width-90{
   width: 90%;
+}
+
+.width-90-auto{
+  width: 90%;
+  margin: 0 auto;
+  text-align: center;
 }
 
 .width-84{
