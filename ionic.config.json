@@ -1,5 +1,7 @@
 {
   "name": "AnimeFind",
-  "integrations": {},
+  "integrations": {
+    "capacitor": {}
+  },
   "type": "angular"
 }
