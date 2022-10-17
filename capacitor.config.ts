@@ -2,7 +2,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.example.findAnime',
-  appName: 'FindAnime',
+  appName: 'Animefind',
   webDir: 'www',
   bundledWebRuntime: false
 };

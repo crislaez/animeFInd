@@ -1,0 +1,33 @@
+@import '../../../theme/variables';
+
+
+:host{
+  width: 100%;
+}
+
+.ion-card{
+  width: 100%;
+  margin: 5px;
+
+  ion-img{
+    height: 8em !important;
+    background: $fourtiary;
+  }
+
+  img{
+    background: $fourtiary;
+  }
+
+  ion-img::part(image) {
+    border-radius: 15px !important;
+    // box-shadow: 2px 2px 2px grey;
+  }
+
+  .ion-card-header{
+    min-height: 30px !important;
+    // margin-top: -5px;
+    color: $tertiary !important;
+    background: $fourtiary !important;
+  }
+
+}

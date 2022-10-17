@@ -4,15 +4,14 @@ import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { NotificationModule } from './../notification/notification.module';
 import { MangaEffects } from './effects/manga.effects';
-import * as fromManga from './reducers/manga.reducer';
-
+import { combineFeatureKey, reducer } from './reducers';
 
 @NgModule({
   declarations: [],
   imports: [
     CommonModule,
     NotificationModule,
-    StoreModule.forFeature(fromManga.mangaFeatureKey, fromManga.reducer),
+    StoreModule.forFeature(combineFeatureKey, reducer),
     EffectsModule.forFeature([MangaEffects]),
   ]
 })

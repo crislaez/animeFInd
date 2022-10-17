@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { NotificationActions } from '@findAnime/shared/notification';
-import { EntityStatus } from '@findAnime/shared/utils/helpers/functions';
+import { EntityStatus } from '@findAnime/shared/utils/functions';
 import { ToastController } from '@ionic/angular';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
@@ -15,9 +15,9 @@ export class EpisodesEffects {
   loadEpisodes$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(EpisodesActions.loadEpisodes),
-      switchMap(({idAnime, page, filter}) => {
-        return this._episode.getEpisodes(idAnime, page, filter).pipe(
-          map(({episodes, totalCount }) => EpisodesActions.saveEpisodes({ idAnime, episodes, page, totalCount, filter, error:undefined, status:EntityStatus.Loaded })),
+      switchMap(({idAnime, page}) => {
+        return this._episode.getEpisodes(idAnime, page).pipe(
+          map(({episodes, totalCount }) => EpisodesActions.saveEpisodes({ idAnime, episodes, page, totalCount, error:undefined, status:EntityStatus.Loaded })),
           catchError(error => {
             return of(
               EpisodesActions.saveEpisodes({ idAnime:null, episodes:[], page:0, totalCount:0, error, status:EntityStatus.Error }),
@@ -29,9 +29,23 @@ export class EpisodesEffects {
     )
   });
 
-  // init$ = createEffect(() => {
-  //   return of(EpisodesActions.loadEpisodes({idEpisode:'12531', page:0}))
-  // })
+  loadStreams$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(EpisodesActions.loadStreams),
+      switchMap(({idAnime, url}) => {
+        return this._episode.getVideoUrls(url).pipe(
+          map(({ streams }) => EpisodesActions.saveStreams({ idAnime, streams, error:undefined, status:EntityStatus.Loaded })),
+          catchError(error => {
+            return of(
+              EpisodesActions.saveStreams({ idAnime, streams:[], error, status:EntityStatus.Error }),
+              NotificationActions.notificationFailure({message: 'ERRORS.ERROR_LOAD_LINKS'})
+            )
+          })
+        )
+      })
+    )
+  });
+
 
   constructor(
     private actions$: Actions,

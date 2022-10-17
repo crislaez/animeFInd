@@ -1,37 +1,58 @@
-import { EntityStatus } from '@findAnime/shared/utils/helpers/functions';
-import { AnimeManga } from '@findAnime/shared/utils/models';
+import { AnimeManga } from '@findAnime/shared/models';
+import { EntityStatus } from '@findAnime/shared/utils/functions';
 import { createReducer, on } from '@ngrx/store';
 import * as EpisodeActions from '../actions/episode.actions';
-import { Filter } from '../models';
 
 export const episodeFeatureKey = 'episode';
 
-export interface State {
+export interface EpisodeState {
   status: EntityStatus;
   episodes?: AnimeManga[];
   page?:number;
   totalCount?:number;
-  filter?: Filter;
+}
+
+export interface State {
   error?: unknown;
-  idAnime?: string;
+  animes: {[key:string]:EpisodeState}
 }
 
 export const initialState: State = {
-  status: EntityStatus.Initial,
-  episodes: [],
-  page: 0,
-  totalCount:0,
-  filter: null,
   error: undefined,
-  idAnime:null
+  animes:{}
 };
 
 export const reducer = createReducer(
   initialState,
-  on(EpisodeActions.loadEpisodes, (state): State => ({ ...state,  error: undefined, status: EntityStatus.Pending })),
-  on(EpisodeActions.saveEpisodes, (state, { idAnime, episodes, page, filter, totalCount, status, error }): State => {
-    const episodesState = page === 0 ? [...episodes] : [...state?.episodes, ...episodes];
-    return ({ ...state, idAnime, episodes: episodesState || [], page, filter, totalCount, status, error })
+  on(EpisodeActions.loadEpisodes, (state, { idAnime }): State => ({
+    ...state,
+    error: undefined,
+    animes:{
+      ...state?.animes,
+      [idAnime]:{
+        ...state?.animes?.[idAnime],
+        status:  EntityStatus.Pending
+      }
+    }
+  })),
+  on(EpisodeActions.saveEpisodes, (state, { idAnime, episodes, page, totalCount, status, error }): State => {
+    return ({
+      ...state,
+      error,
+      animes: {
+        ...state?.animes,
+        [idAnime]:{
+          ...state?.animes?.[idAnime],
+          episodes: page === 0
+                  ? episodes
+                  : [...state?.animes?.[idAnime]?.episodes, ...(episodes ?? [])],
+          page,
+          totalCount,
+          status,
+        }
+      }
+
+    })
   }),
 
 );

@@ -1,0 +1,95 @@
+@import '../../../theme/variables';
+
+:host ::ng-deep .swiper-pagination{
+
+  .swiper-pagination-bullet {
+    background-color: $primary;
+  }
+
+}
+
+:host{
+  width: 100%;
+}
+
+swiper {
+  margin-top: 10px;
+  margin-bottom: 10px;
+
+  ng-template{
+    min-height: 100px;
+  }
+}
+
+.slide-ion-card{
+  width: 92% !important;
+  min-height: 100px;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 10px;
+  background: none;
+  margin-bottom: 40px;
+
+  img, ion-img{
+    width: 100%;
+    height: 8em !important;
+  }
+
+  ion-img::part(image) {
+    border-radius: 20px !important;
+    // box-shadow: 2px 2px 2px grey;
+  }
+
+
+  ion-card-header{
+    height: 40px !important;
+    margin-top: -5px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    color: $tertiary;
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+}
+
+
+.ion-card-header{
+  min-height: 70px !important;
+  margin-top: -5px;
+  color: $fifthiary;
+  background: $fifthiary !important;
+}
+
+// SKELETON
+.div-image {
+  height: 7em !important;
+  border-radius: 5px;
+}
+
+.div-p{
+  height: 20px;
+}
+
+.div-image, .div-p{
+  width: 100%;
+  background: #383939;
+  box-shadow: 1px 1px 5px black !important;
+  position: relative;
+
+  &:after{
+    display: block;
+    content: '';
+    width: 100%;
+    height: 100%;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .4) , transparent);
+    animation: loading 1s infinite;
+  }
+}
+
+@keyframes loading {
+  100% {
+    transform: translateX(100%);
+  }
+}

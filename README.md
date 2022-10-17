@@ -1,6 +1,6 @@
 ## (front-end) ANIME FIND
 
-AnimeFind es una aplicación hecha en Ionic (Angular, TypeScript, Sass/Css, Html, Rxjs, Ngrx)
+AnimeFind es una aplicación hecha en Ionic (Angular, TypeScript, Sass/Css, Html, Rxjs, Ngrx), usando la API kitsu.io
 
 <img src="https://github.com/crislaez/animeFind/blob/master/src/assets/images/animeFind_1.jpg" />
 <hr>

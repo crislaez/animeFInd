@@ -1,0 +1,84 @@
+@import '../../../theme/variables';
+
+:host{
+  width: 100%;
+}
+
+ion-card{
+  width: 94%;
+  margin: 0 auto;
+  min-height: 8em;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+  padding: 5px;
+  background: $fourtiary;
+
+  &:before{
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 50%;
+    top: -22px;
+    left: 25px;
+    background: rgba(255, 255, 255, 0.1);
+    // background: $primary;
+    transform: rotate(23deg);
+  }
+
+  .card-title{
+    width: 100%;
+
+    .card-title-div{
+      width: 87%;
+      font-size: 10px;
+      color: $tertiary;
+      text-align: center;
+      // text-shadow: 1px 1px 2px black;
+    }
+
+    .card-title-icon{
+      width: 10%;
+
+      ion-icon{
+        font-size: 10px !important;
+      }
+
+    }
+  }
+
+  .card-item{
+    width: 100%;
+
+    >div{
+      width: 45%
+    }
+
+    img{
+      width: 30%;
+
+    }
+  }
+
+  ion-img {
+    width: 4.5em;
+    height: 5em;
+    margin: 0 auto;
+    border-radius: 5px;
+    overflow: hidden;
+    object-position: top;
+    // margin-top: 10px;
+  }
+
+  ion-chip{
+    width: 100%;
+    height: 15px;
+    background: rgba(255, 255, 255, 0.2);
+
+    ion-label{
+      font-size: 7px;
+      margin: 0 auto;
+    }
+  }
+
+}

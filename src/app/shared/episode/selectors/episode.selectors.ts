@@ -1,42 +1,84 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import * as fromEpisode from '../reducers/episode.reducer';
+import { episodeFeatureKey } from '../reducers/episode.reducer';
+import { streamFeatureKey } from '../reducers/stream.reducers';
+import { combineFeatureKey, CombineState } from '../reducers';
 
-export const selectorEpisodeState = createFeatureSelector<fromEpisode.State>(
-  fromEpisode.episodeFeatureKey
+export const selectCombineState = createFeatureSelector<CombineState>(combineFeatureKey);
+
+// export const selectorEpisodeState = createFeatureSelector<fromEpisode.State>(
+//   fromEpisode.episodeFeatureKey
+// );
+
+
+/* === EPISODES === */
+export const selectEpisodeState = createSelector(
+  selectCombineState,
+  (state) => state[episodeFeatureKey]
 );
 
-export const getStatus = createSelector(
-  selectorEpisodeState,
-  (state) => state?.status
-);
 
-export const getEpisodes = createSelector(
-  selectorEpisodeState,
-  (state) => state?.episodes
-);
-
-export const getTotalCount = createSelector(
-  selectorEpisodeState,
-  (state) => state?.totalCount
-);
-
-export const getFilters = createSelector(
-  selectorEpisodeState,
-  (state) => state?.filter
-)
-
-export const getPage = createSelector(
-  selectorEpisodeState,
-  (state) => state?.page
-);
-
-export const getError = createSelector(
-  selectorEpisodeState,
+export const selectError = createSelector(
+  selectEpisodeState,
   (state) => state?.error
 );
 
-export const getIdAnime = createSelector(
-  selectorEpisodeState,
-  (state) => state?.idAnime
+export const selectAllAnimes = createSelector(
+  selectEpisodeState,
+  (state) => state?.animes
 );
+
+export const selectAnimeSelected = (idAnime: string) => createSelector(
+  selectAllAnimes,
+  (animes) => animes?.[idAnime]
+);
+
+export const selectAnimeSelectedEpisodes = (idAnime: string) => createSelector(
+  selectAllAnimes,
+  (animes) => animes?.[idAnime]?.episodes
+);
+
+export const selectAnimeSelectedStatus = (idAnime: string) => createSelector(
+  selectAllAnimes,
+  (animes) => animes?.[idAnime]?.status
+);
+
+export const selectAnimeSelectedPage = (idAnime: string) => createSelector(
+  selectAllAnimes,
+  (animes) => animes?.[idAnime]?.page
+);
+
+export const selectAnimeSelectedTotalCount = (idAnime: string) => createSelector(
+  selectAllAnimes,
+  (animes) => animes?.[idAnime]?.totalCount
+);
+
+
+
+/* === URLS === */
+export const selectStreamState = createSelector(
+  selectCombineState,
+  (state) => state[streamFeatureKey]
+);
+
+
+export const selectStreamError = createSelector(
+  selectStreamState,
+  (state) => state?.error
+);
+
+export const selectStreamLink = createSelector(
+  selectStreamState,
+  (state) => state?.links
+);
+
+export const selectStreamLinkStatus = (idAnime:string) => createSelector(
+  selectStreamLink,
+  (links) => links?.[idAnime]?.status
+);
+
+export const selectStreamLinkStreams = (idAnime:string) => createSelector(
+  selectStreamLink,
+  (links) => links?.[idAnime]?.streams
+);
+
 

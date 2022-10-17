@@ -1,0 +1,21 @@
+@import '../../../theme/variables';
+
+:host{
+  width: 100%;
+}
+
+
+.item-wrapper{
+  background: $fourtiary;
+
+  >div, a{
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+}
+
+.class-ion-button{
+  --background: $secondary !important;
+  --color: #9246FF !important;
+  text-transform: initial;
+}

@@ -1,3 +1,4 @@
 export interface Filter {
-  text?: string
+  "text"?: string;
+  "categories"?: string;
 }

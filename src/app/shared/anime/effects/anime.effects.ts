@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { NotificationActions } from '@findAnime/shared/notification';
-import { EntityStatus } from '@findAnime/shared/utils/helpers/functions';
+import { EntityStatus } from '@findAnime/shared/utils/functions';
 import { ToastController } from '@ionic/angular';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
@@ -34,10 +34,10 @@ export class AnimeEffects {
       ofType(AnimeActions.loadTrendingAnimeList),
       switchMap(() => {
         return this._anime.getTrendingAnime().pipe(
-          map(({ trendingAnimeList }) => AnimeActions.saveTrendingAnimeList({ trendingAnimeList, error:undefined, status:EntityStatus.Loaded })),
+          map(({ animeList }) => AnimeActions.saveTrendingAnimeList({ animeList, error:undefined, status:EntityStatus.Loaded })),
           catchError(error => {
             return of(
-              AnimeActions.saveTrendingAnimeList({ trendingAnimeList:[], error, status:EntityStatus.Error }),
+              AnimeActions.saveTrendingAnimeList({ animeList:[], error, status:EntityStatus.Error }),
               NotificationActions.notificationFailure({message: 'ERRORS.ERROR_LOAD_TRENDING_ANIME_LIST'})
             )
           })
@@ -46,9 +46,57 @@ export class AnimeEffects {
     )
   });
 
-  tryLoadTrendingAnimeList$ = createEffect(() => {
-    return of(AnimeActions.loadTrendingAnimeList())
+  loadMostAnticipatedAnimeList$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(AnimeActions.loadMostAnticipatedAnimeList),
+      switchMap(() => {
+        return this._anime.getMostAnticipatedAnime().pipe(
+          map(({ animeList }) => AnimeActions.saveMostAnticipatedAnimeList({ animeList, error:undefined, status:EntityStatus.Loaded })),
+          catchError(error => {
+            return of(
+              AnimeActions.saveMostAnticipatedAnimeList({ animeList:[], error, status:EntityStatus.Error }),
+              NotificationActions.notificationFailure({message: 'ERRORS.ERROR_LOAD_MOST_ANTICIPATED_ANIME_LIST'})
+            )
+          })
+        )
+      })
+    )
   });
+
+  loadBestEvaluatedAnimeList$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(AnimeActions.loadBestEvaluatedAnimeList),
+      switchMap(() => {
+        return this._anime.getBestEvaluatedAnime().pipe(
+          map(({ animeList }) => AnimeActions.saveBestEvaluatedAnimeList({ animeList, error:undefined, status:EntityStatus.Loaded })),
+          catchError(error => {
+            return of(
+              AnimeActions.saveBestEvaluatedAnimeList({ animeList:[], error, status:EntityStatus.Error }),
+              NotificationActions.notificationFailure({message: 'ERRORS.ERROR_LOAD_BEST_EVALUATED_ANIME_LIST'})
+            )
+          })
+        )
+      })
+    )
+  });
+
+  loadMostPopularAnimeList$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(AnimeActions.loadMostPopularAnimeList),
+      switchMap(() => {
+        return this._anime.getMostPopularAnime().pipe(
+          map(({ animeList }) => AnimeActions.saveMostPopularAnimeList({ animeList, error:undefined, status:EntityStatus.Loaded })),
+          catchError(error => {
+            return of(
+              AnimeActions.saveMostPopularAnimeList({ animeList:[], error, status:EntityStatus.Error }),
+              NotificationActions.notificationFailure({message: 'ERRORS.ERROR_LOAD_MOST_POPULAR_ANIME_LIST'})
+            )
+          })
+        )
+      })
+    )
+  });
+
 
 
   constructor(

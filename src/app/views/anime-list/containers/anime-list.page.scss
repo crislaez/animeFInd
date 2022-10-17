@@ -1,0 +1,17 @@
+@import '../../../../theme/variables.scss';
+
+form{
+  width: 75%;
+}
+
+ion-button{
+  --border-radius: 5px !important;
+  --background: none;
+  color: $secondary;
+  // color: $secondary // $tertiary;
+  width: 15%;
+}
+
+app-item-list{
+  width: 48%;
+}

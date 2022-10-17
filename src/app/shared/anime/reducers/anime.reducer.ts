@@ -1,10 +1,10 @@
-import { EntityStatus } from '@findAnime/shared/utils/helpers/functions';
-import { AnimeManga } from '@findAnime/shared/utils/models';
+import { AnimeManga } from '@findAnime/shared/models';
+import { EntityStatus } from '@findAnime/shared/utils/functions';
 import { createReducer, on } from '@ngrx/store';
 import * as AnimeActions from '../actions/anime.actions';
 import { Filter } from '../models';
 
-export const animeFeatureKey = 'anime';
+export const animeListFeatureKey = 'animeList';
 
 export interface State {
   status: EntityStatus;
@@ -13,8 +13,6 @@ export interface State {
   totalCount?:number;
   filter?: Filter;
   error?: unknown;
-  trendingAnimeList?: AnimeManga[];
-  trendingStatus: EntityStatus;
 }
 
 export const initialState: State = {
@@ -24,19 +22,23 @@ export const initialState: State = {
   totalCount:0,
   filter: null,
   error: undefined,
-  trendingAnimeList:[],
-  trendingStatus: EntityStatus.Initial
 };
 
 export const reducer = createReducer(
   initialState,
   on(AnimeActions.loadAnimeList, (state): State => ({ ...state,  error: undefined, status: EntityStatus.Pending })),
   on(AnimeActions.saveAnimeList, (state, { animeList, page, filter, totalCount, status, error }): State => {
-    const animeListState = page === 0 ? [...animeList] : [...state?.animeList, ...animeList];
-    return ({ ...state, animeList: animeListState || [], page, filter, totalCount, status, error })
+    return ({
+      ...state,
+      animeList: page === 0
+              ? animeList
+              : [...state?.animeList, ...(animeList ?? [])],
+      page,
+      filter,
+      totalCount,
+      status,
+      error
+     })
   }),
-
-  on(AnimeActions.loadTrendingAnimeList, (state): State => ({ ...state,  error: undefined, trendingStatus: EntityStatus.Pending })),
-  on(AnimeActions.saveTrendingAnimeList, (state, { trendingAnimeList, status, error }): State => ({ ...state, trendingAnimeList,  error, trendingStatus: status })),
 
 );

@@ -1,0 +1,85 @@
+@import '../../../theme/variables';
+
+
+ion-header{
+  background: $secondary;
+}
+
+ion-title{
+  width: 100% !important;
+  font-size: 22px !important;
+  text-align: center !important;
+}
+
+ion-button{
+  --background: none;
+}
+
+.ion-button-close{
+  --background: none;
+}
+
+.modal-ion-card{
+  margin-top: 80px;
+  width: 90%;
+  min-height: 80vh;
+  background: $secondary;
+
+  .modal-ion-card-image{
+    border-radius: 20px;
+    min-height: 475px !important;
+  }
+}
+
+.span-image{
+  width: 1.5em !important;
+  min-height: 10px !important;
+  background: none !important;
+}
+
+
+hr {
+  // border: 2px solid red !important;
+  height: 2px !important;
+  width: 80% !important;
+  background: $tertiary !important;
+  display: block !important;
+  font-size: 2em !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+app-info-card{
+  width: 92%;
+  margin: 0 auto;
+}
+
+app-episode-card{
+  width: 40%;
+}
+
+ion-img{
+  width: 92%;
+  margin: 0 auto;
+  margin-top: 30px;
+}
+
+ion-img::part(image) {
+  border-radius: 20px !important;
+  // box-shadow: 2px 2px 2px grey;
+}
+
+.item-wrapper{
+  width: 92%;
+  margin: 0 auto;
+  padding: 5px;
+  background: $fourtiary;
+
+  a{
+    width: 3em;
+    >img{
+      border-radius: 50%;
+    }
+  }
+}
+

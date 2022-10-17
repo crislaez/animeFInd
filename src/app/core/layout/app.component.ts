@@ -1,57 +1,60 @@
-import { Observable } from 'rxjs';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { NavigationEnd, NavigationStart, Router } from '@angular/router';
+import { NotificationModal } from '@findAnime/shared-ui/notification-modal/notification-modal';
+import { ModalController } from '@ionic/angular';
 import { filter, map } from 'rxjs/operators';
-
 
 @Component({
   selector: 'app-root',
   template:`
-  <ion-app >
-
-    <!-- CABECERA  -->
+  <ion-app>
     <ion-header class="ion-no-border">
       <ion-toolbar *ngIf="(currentSection$ | async) as currentSection">
-        <!-- <ion-button *ngIf="currentSection !== 'COMMON.SET'" fill="clear" size="small" slot="start"  (click)="open()">
-          <ion-menu-button class="text-color"></ion-menu-button>
-        </ion-button> -->
+        <ion-back-button
+          *ngIf="!isNotShowBackButtons?.includes(currentSection)"
+          class="text-color"
+          slot="start"
+          [defaultHref]="redirectTo(currentSection)"
+          [text]="''">
+        </ion-back-button>
 
-        <!-- <ion-back-button *ngIf="currentSection === 'COMMON.SET'" class="text-color" slot="start" defaultHref="/home" [text]="''"></ion-back-button> -->
+        <ion-title class="text-color-light">
+          {{ 'COMMON.TITLE' | translate }}
+        </ion-title>
 
-        <ion-title class="text-color-light ion-text-center" >{{ 'COMMON.TITLE' | translate }}</ion-title>
+        <ion-icon
+          class="text-color"
+          slot="end"
+          name="ellipsis-horizontal-outline"
+          (click)="presentModal()">
+        </ion-icon>
 
       </ion-toolbar>
     </ion-header>
-
-    <!-- MENU LATERAL  -->
-    <!-- <ion-menu side="start" menuId="first" contentId="main">
-      <ion-header>
-        <ion-toolbar >
-          <ion-title class="text-color-light" >{{ 'COMMON.MENU' | translate}}</ion-title>
-        </ion-toolbar>
-      </ion-header>
-
-      <ion-content >
-        <ion-item class="text-second-color" *ngFor="let item of lateralMenu;  trackBy: trackById" [routerLink]="['/'+item?.link]" (click)="openEnd()">{{ item?.text | translate }}</ion-item>
-      </ion-content >
-    </ion-menu> -->
 
     <!-- RUTER  -->
     <ion-router-outlet id="main"></ion-router-outlet>
 
     <!-- TAB FOOTER  -->
-    <!-- <ion-tabs *ngIf="currentSection$ | async as currentSection" class="ion-no-border">
+    <ion-tabs *ngIf="currentSection$ | async as currentSection">
       <ion-tab-bar [translucent]="true" slot="bottom">
-        <ion-tab-button [ngClass]="{'active-class': ['home']?.includes(currentSection)}" class="text-color-light" [routerLink]="['home']">
-          <ion-icon name="document-text-outline"></ion-icon>
+        <ion-tab-button
+          [ngClass]="{'active-class': currentSection?.includes('anime')}"
+          class="text-color-light"
+          [routerLink]="['anime']">
+          <ion-icon name="videocam-outline"></ion-icon>
+          <ion-label>{{ 'COMMON.ANIME' | translate }}</ion-label>
         </ion-tab-button>
 
-        <ion-tab-button [ngClass]="{'active-class': ['search']?.includes(currentSection)}" class="text-color-light" [routerLink]="['search']">
-          <ion-icon name="search-outline"></ion-icon>
+        <ion-tab-button
+          [ngClass]="{'active-class': currentSection?.includes('manga')}"
+          class="text-color-light"
+          [routerLink]="['manga']">
+          <ion-icon name="book-outline"></ion-icon>
+          <ion-label>{{ 'COMMON.MANGA' | translate }}</ion-label>
         </ion-tab-button>
       </ion-tab-bar>
-    </ion-tabs> -->
-
+    </ion-tabs>
   </ion-app>
   `,
   styleUrls: ['app.component.scss'],
@@ -59,15 +62,40 @@ import { filter, map } from 'rxjs/operators';
 })
 export class AppComponent {
 
-  currentSection$: Observable<string> = this.router.events.pipe(
+  isNotShowBackButtons = ['anime','manga'];
+  currentSection$ = this.router.events.pipe(
     filter((event: any) => event instanceof NavigationStart),
     map((event: NavigationEnd) => {
-      const { url = ''} = event || {}
-      let route = url?.split('/')[1];
-      return route || 'home';
+      const { url = ''} = event || {};
+
+      const [ , route = null, secondRouter = null] = url?.split('/') || [];
+      if(secondRouter) return url
+      return route || 'anime';
     })
   );
 
-  constructor(private router: Router) {}
+
+  constructor(
+    private router: Router,
+    private modalController: ModalController,
+  ) { }
+
+
+  redirectTo(currentSection:any): string{
+    if(currentSection?.includes('anime')) return '/anime'
+    if(currentSection?.includes('manga')) return '/manga'
+    return '/anime';
+  }
+
+  // OPEN FILTER MODAL
+  async presentModal() {
+    const modal = await this.modalController.create({
+      component: NotificationModal,
+    });
+
+    modal.present();
+    await modal.onDidDismiss();
+  }
 
 }
+
