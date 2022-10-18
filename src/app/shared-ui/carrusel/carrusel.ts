@@ -56,7 +56,7 @@ export class CarruselComponent {
   getSliderConfig = getSliderConfig;
   @Input() items: any[];
   @Input() isSkeleton: boolean;
-  @Output() openSingleCardModal = new EventEmitter<any>()
+  @Output() openSingleCardModal = new EventEmitter<any>();
 
 
   constructor() { }
